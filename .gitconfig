@@ -1,0 +1,58 @@
+[core]
+    editor = vim
+    excludesfile = ~/.gitignore
+    attributesfile = ~/.gitattributes
+    autocrlf = input
+    filemode = false
+    precomposeunicode = true
+    safecrlf = warn
+
+[merge]
+    tool = vimdiff
+    conflictstyle = diff3
+
+[diff]
+    tool = vimdiff
+    context = 3
+
+[color]
+    ui = auto
+    diff = auto
+    status = auto
+
+[alias]
+    st = status
+    co = checkout
+    ci = commit
+    br = branch
+    lg = log --oneline --graph --decorate --all
+
+[push]
+    default = current
+    followTags = true
+
+[remote "origin"]
+    fetch = +refs/heads/*:refs/remotes/origin/*
+
+[commit]
+    # gpgSign = true
+
+[gc]
+    auto = 256
+
+[rebase]
+    autoSquash = true
+    preserveMerges = true
+
+[status]
+    showUntrackedFiles = all
+
+[log]
+    decorate = full
+
+[mergetool]
+    keepBackup = false
+
+[help]
+    color = auto
+
