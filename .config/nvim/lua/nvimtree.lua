@@ -6,7 +6,7 @@ require("nvim-tree").setup({
 			show = { folder = false, file = false, folder_arrow = false, git = true },
 			glyphs = { default = '', symlink = '', bookmark = '' },
 		},
-		indent_width = 4,
+		indent_width = 2,
 	},
-	view = { width = 40 },
+	view = { width = 50 },
 })
