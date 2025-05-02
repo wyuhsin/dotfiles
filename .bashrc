@@ -6,7 +6,8 @@ if [[ -z ${TMUX} ]]; then
 	cd ~
 
 	export GOPROXY="https://goproxy.cn,direct"
-	export GO111MODULE=on export GOPATH="/home/wyuhsin/go"
+	export GO111MODULE=on
+	export GOPATH="/home/wyuhsin/go"
 	export GOBIN="/home/wyuhsin/go/bin"
 	export PATH="$GOPATH:$GOBIN:$PATH"
 
