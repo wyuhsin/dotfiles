@@ -34,6 +34,7 @@ packages=(
 	"unzip"
 	"kubectl"
 	"inetutils"
+	"podman"
 )
 
 package_list=$(echo "${packages[@]}" | tr ' ' ' ')
