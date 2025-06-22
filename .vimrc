@@ -39,14 +39,20 @@ inoremap jj <Esc>
 " plug
 call plug#begin('~/.vim/plugged')
 
-" CocInstall coc-go
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'fannheyward/coc-rust-analyzer', {'do': 'npm install'}
+" go install golang.org/x/tools/gopls@latest
+Plug 'josa42/coc-go', {'do': 'npm install'}
+Plug 'clangd/coc-clangd', {'do': 'npm install'}
+Plug 'fannheyward/coc-pyright', {'do': 'npm install'}
+Plug 'neoclide/coc-snippets'
 
+Plug 'preservim/nerdtree'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'airblade/vim-rooter'
 Plug 'tpope/vim-fugitive'
+Plug 'jiangmiao/auto-pairs'
 
 " copilot
 " Plug 'github/copilot.vim'
@@ -55,22 +61,22 @@ call plug#end()
 
 " coc.nvim configuration
 inoremap <silent><expr> <TAB>
-			\ coc#pum#visible() ? coc#pum#next(1) :
-			\ CheckBackspace() ? "\<Tab>" :
-			\ coc#refresh()
+      \ coc#pum#visible() ? coc#pum#next(1) :
+      \ CheckBackspace() ? "\<Tab>" :
+      \ coc#refresh()
+
 inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
 
-" Make <CR> to accept selected completion item or notify coc.nvim to format
-" <C-g>u breaks current undo, please make your own choice
 inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
-			\: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
 function! CheckBackspace() abort
 	let col = col('.') - 1
 	return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 
-nmap <silent> [g <Plug>(coc-diagnostic-prev)
+let g:coc_snippet_next = '<tab>'
+
 nmap <silent> ]g <Plug>(coc-diagnostic-next)
 nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
@@ -80,6 +86,8 @@ nnoremap <silent> K :call ShowDocumentation()<CR>
 nmap <leader>rn <Plug>(coc-rename)
 xmap <leader>f  <Plug>(coc-format-selected)
 nmap <leader>f  <Plug>(coc-format-selected)
+xmap <leader>ca  <Plug>(coc-codeaction-selected)
+nmap <leader>ca  <Plug>(coc-codeaction-selected)
 
 function! ShowDocumentation()
 	if CocAction('hasProvider', 'hover')
@@ -94,8 +102,14 @@ autocmd CursorHold * silent call CocActionAsync('highlight')
 
 " fzf configuration
 let g:fzf_vim = {}
+nnoremap <leader>ff :Files<CR>
+nnoremap <leader>fk :Rg<CR>
+nnoremap <leader>fb :Buffers<CR>
+nnoremap <leader>fh :History<CR>
 
 " vim-rooter
 let g:rooter_targets = '/,*'
 let g:rooter_patterns = ['.git']
 
+" nerdtree
+nnoremap <leader>e :NERDTreeToggle<CR>
