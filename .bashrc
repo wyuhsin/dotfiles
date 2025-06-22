@@ -45,8 +45,8 @@ alias rm="rm -i"
 alias mv="mv -i"
 alias cp="cp -i"
 alias g="git"
-alias vi="nvim"
-alias vim="nvim"
+alias vi="vim"
+alias vim="vim"
 alias lg="lazygit"
 
 # git configuration
