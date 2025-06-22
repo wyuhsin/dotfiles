@@ -11,7 +11,6 @@ fi
 packages=(
 	"rsync"
 	"vim"
-	"neovim"
 	"git"
 	"go"
 	"rust"
