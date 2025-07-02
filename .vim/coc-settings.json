@@ -1,0 +1,7 @@
+{
+	"coc.preferences.extensionUpdateCheck": "daily",
+	"suggest.noselect": true,
+	"suggest.enablePreselect": false,
+	"suggest.maxCompleteItemCount": 30,
+	"suggest.snippetSupport": true
+}
