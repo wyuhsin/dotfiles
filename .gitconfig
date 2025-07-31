@@ -31,9 +31,6 @@
     default = current
     followTags = true
 
-[remote "origin"]
-    fetch = +refs/heads/*:refs/remotes/origin/*
-
 [commit]
     # gpgSign = true
 
