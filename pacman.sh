@@ -16,6 +16,7 @@ packages=(
 	"rust"
 	"cargo"
 	"python"
+	"python-pip"
 	"lua"
 	"nodejs"
 	"npm"
