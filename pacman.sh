@@ -35,7 +35,9 @@ packages=(
 	"kubectl"
 	"inetutils"
 	"podman"
+	"podman-compose"
 	"ripgrep"
+	"ffmpeg"
 )
 
 package_list=$(echo "${packages[@]}" | tr ' ' ' ')
