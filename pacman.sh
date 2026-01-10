@@ -38,6 +38,7 @@ packages=(
 	"podman-compose"
 	"ripgrep"
 	"ffmpeg"
+	"git-lfs"
 )
 
 package_list=$(echo "${packages[@]}" | tr ' ' ' ')
