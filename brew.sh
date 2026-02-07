@@ -10,15 +10,14 @@ fi
 
 packages=(
 	"apifox"
-	"chatgpt"
 	"wechat"
 	"wechatwork"
 	"dingtalk"
 	"google-chrome"
 	"microsoft-remote-desktop"
 	"navicat-premium"
-	"omnigraffle"
 	"openvpn-connect"
+	"drawio"
 	"orbstack"
 	"paper"
 	"sunloginclient"
@@ -26,6 +25,10 @@ packages=(
 	"termius"
 	"wpsoffice"
 	"xmind"
+	"golang"
+	"vim"
+	"lazygit"
+	"tmux"
 )
 
 package_list=$(echo "${packages[@]}" | tr ' ' ' ')
