@@ -2,7 +2,7 @@
 
 ## Knowledge & Learning
 
-- Maintain evidence-backed reusable project, domain, operational, and workflow knowledge in `~/llm-wiki/`; search it when prior knowledge may matter. Redact sensitive sources and date facts likely to change.
+- Maintain evidence-backed reusable project, domain, operational, and workflow knowledge in the connected Notion workspace; use the Notion connector to search it when prior knowledge may matter and to write durable knowledge. Redact sensitive sources and date facts likely to change.
 - Repeated procedures go to `~/.codex/skills/`; reusable code tests and examples go to the snippets skill; one-off runtime state, transient errors, guesses, and secrets are discarded.
 
 ## Karpathy Core

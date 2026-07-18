@@ -1,13 +1,13 @@
 ---
 name: nginx-log-analysis
-description: Nginx access log 分析规范。用于从用户提供的日志路径独立生成结构化流量指标数据。
+description: Nginx access log 分析规范。用于在生成周报的接口数据时，从用户提供的日志路径独立生成结构化流量指标数据。
 ---
 
 # Nginx Access Log 分析规范
 
 ## 1. 目的
 
-从用户提供的 Nginx access log 中提取接口与流量相关指标，独立输出结构化 JSON。
+从用户提供的 Nginx access log 中提取接口与流量相关指标，生成周报所需的接口数据，并独立输出结构化 JSON。
 
 ## 2. 标准来源
 
@@ -18,6 +18,7 @@ description: Nginx access log 分析规范。用于从用户提供的日志路�
 
 ## 3. 适用场景
 
+- 生成周报的接口数据，需要从 Nginx access log 提取接口与流量指标。
 - 需要根据 Nginx access log 生成结构化流量指标数据。
 - 需要复盘某个时间窗口内的 QPS、成功率、平均响应时间、P95/P99。
 - 需要对现有统计口径做调整，例如排除 WebSocket、排除下载接口、只统计成功请求响应时间。
