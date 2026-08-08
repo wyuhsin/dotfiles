@@ -7,6 +7,10 @@ fpath=(/opt/homebrew/share/zsh/site-functions $fpath)
 autoload -Uz compinit
 compinit -u
 
+if [[ -d "$HOME/.acme.sh" && -f "$HOME/.acme.sh/acme.sh.env" ]]; then
+	source "$HOME/.acme.sh/acme.sh.env"
+fi
+
 setopt prompt_subst
 
 export TERM="xterm-256color"
