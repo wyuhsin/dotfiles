@@ -30,8 +30,8 @@ This repository is the source of truth for personal dotfiles, package bootstrap 
 | Apply OrbStack Docker config | `bash ./bootstrap.sh --force --backup --apply-orbstack-docker` |
 | Check/preview Homebrew | `HOMEBREW_NO_AUTO_UPDATE=1 brew bundle check --no-upgrade --file Brewfile`; `bash ./brew.sh --dry-run` |
 | Shell checks | `bash -n bootstrap.sh brew.sh pacman.sh`; `shellcheck bootstrap.sh brew.sh pacman.sh`; `shfmt -d -i 4 -ci bootstrap.sh brew.sh pacman.sh`; `zsh -n .zshrc` |
-| Build cross-compile image | `docker build -t cross-compile-builder ./dockerfiles/cross-compile-builder/` |
-| Smoke-test image | `docker run --rm cross-compile-builder go version` |
+| Build cross-compile image | `docker build -t go-cross-compile-builder:latest ./dockerfiles/go-cross-compile-builder/` |
+| Smoke-test image | `docker run --rm go-cross-compile-builder:latest go version` |
 
 ## Workflows
 
@@ -51,7 +51,7 @@ This repository is the source of truth for personal dotfiles, package bootstrap 
 
 ### Docker
 
-- Edit the relevant `Dockerfile` directly. For `cross-compile-builder`, `GO_VERSION` defaults to `latest`, `BASE_IMAGE` to `debian:bookworm-slim`, and `IMAGE_PLATFORM` to `linux/amd64`; the Linaro toolchains require an x86_64 build platform.
+- Edit the relevant `Dockerfile` directly. For `go-cross-compile-builder`, `GO_VERSION` defaults to `latest`, `BASE_IMAGE` to `debian:bookworm-slim`, and `IMAGE_PLATFORM` to `linux/amd64`; the Linaro toolchains require an x86_64 build platform.
 - For OrbStack engine changes, use `bootstrap.sh --apply-orbstack-docker` or `orb config docker`, then restart with `orb restart docker` and verify with `docker info --format '{{json .RegistryConfig.Mirrors}}'`.
 
 ## Verification

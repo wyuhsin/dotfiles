@@ -5,7 +5,7 @@ Build image for packaging Go projects with C toolchains, especially Linux ARM an
 ## Build
 
 ```bash
-docker build -t cross-compile-builder .
+docker build -t go-cross-compile-builder:latest .
 ```
 
 The image defaults to `linux/amd64` because the bundled Linaro cross toolchains are x86_64 binaries. The base image uses `docker.1ms.run` by default and can be overridden with `BASE_IMAGE` or `IMAGE_PLATFORM` build args.
@@ -13,12 +13,14 @@ The image defaults to `linux/amd64` because the bundled Linaro cross toolchains 
 Go defaults to the latest stable release from `go.dev`. Pin a specific version when reproducible builds are required:
 
 ```bash
-docker build --build-arg GO_VERSION=1.24.0 -t cross-compile-builder .
+docker build --build-arg GO_VERSION=1.24.0 -t go-cross-compile-builder:latest .
 ```
 
 ## Usage
 
 ```makefile
+BUILD_IMAGE ?= go-cross-compile-builder:latest
+
 build-linux-arm64:
         docker run --rm -it \
         -v $(CURR_DIR):/app \
