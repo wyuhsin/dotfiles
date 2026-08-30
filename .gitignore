@@ -15,4 +15,8 @@ __pycache__/
 node_modules/
 target/
 
+.gitconfig.local
+.bashrc.local
+.zprofile.local
+.zshrc.local
 

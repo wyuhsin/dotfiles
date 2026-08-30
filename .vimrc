@@ -39,6 +39,7 @@ set updatetime=100
 inoremap jj <Esc>
 
 " plug
+if filereadable(expand('~/.vim/autoload/plug.vim'))
 call plug#begin('~/.vim/plugged')
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
@@ -49,6 +50,7 @@ Plug 'jiangmiao/auto-pairs'
 Plug 'voldikss/vim-floaterm'
 
 call plug#end()
+endif
 
 " coc.nvim configuration
 inoremap <silent><expr> <TAB>

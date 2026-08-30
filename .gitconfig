@@ -1,3 +1,6 @@
+[include]
+    path = ~/.gitconfig.local
+
 [core]
     editor = vim
     excludesfile = ~/.config/git/ignore
@@ -51,8 +54,7 @@
     color = auto
 
 [user]
-    name = ping999
-    email = yuxin.weng@outlook.com
+    useConfigOnly = true
 
 [url "git@gitlab.haiwell.com:"]
     insteadof = http://gitlab.haiwell.com/

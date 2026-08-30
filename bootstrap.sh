@@ -5,11 +5,12 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DRY_RUN=false
 FORCE=false
 BACKUP=false
-DELETE_SKILLS=false
+DELETE_SKILLS=true
+APPLY_ORBSTACK_DOCKER=false
 
 usage() {
     cat <<'EOF'
-Usage: bootstrap.sh [--force] [--dry-run] [--backup] [--delete-skills]
+Usage: bootstrap.sh [--force] [--dry-run] [--backup] [--preserve-local-skills] [--apply-orbstack-docker]
 
 Sync dotfiles and shared Codex skills into $HOME.
 
@@ -17,7 +18,11 @@ Options:
   -f, --force          Skip confirmation
   -n, --dry-run        Show files that would be synced without changing anything
   -b, --backup         Back up overwritten files with a timestamp suffix
-  --delete-skills      Delete files in ~/.codex/skills that are not tracked in this repo
+  --preserve-local-skills
+                       Keep files in ~/.codex/skills that are not tracked in this repo
+  --delete-skills      Deprecated compatibility flag; mirror mode is already the default
+  --apply-orbstack-docker
+                       Apply .docker/daemon.json to OrbStack and restart its Docker engine
   -h, --help           Show this help
 EOF
 }
@@ -28,6 +33,8 @@ do_it() {
         --exclude ".github/"
         --exclude ".agents/"
         --exclude ".codex/skills/"
+        --exclude ".docker/"
+        --exclude ".orbstack/"
         --exclude "dockerfiles/"
         --exclude "bootstrap.sh"
         --exclude "pacman.sh"
@@ -52,13 +59,15 @@ do_it() {
     rsync "${rsync_args[@]}" "$SCRIPT_DIR"/ "$HOME"/
 
     # Sync .codex/skills/ into ~/.codex/skills/.
-    # Default: repo files overwrite local, new repo files are added, local-only files are preserved.
-    # With --delete: mirror mode, removes local-only files (except .system/ and codex-primary-runtime/).
+    # Mirror mode: repo files overwrite local, new repo files are added, and local-only files
+    # are removed (except .system/ and codex-primary-runtime/).
     local skills_src="$SCRIPT_DIR/.codex/skills/"
     local skills_dst="$HOME/.codex/skills/"
     local -a skills_rsync_args=(
         -avh
         --no-perms
+        --no-owner
+        --no-group
         --exclude ".DS_Store"
         --exclude "__pycache__/"
         --exclude "*.pyc"
@@ -67,9 +76,39 @@ do_it() {
     )
     [[ "$DELETE_SKILLS" == true ]] && skills_rsync_args+=(--delete)
     [[ "$DRY_RUN" == true ]] && skills_rsync_args+=(--dry-run)
-    [[ "$BACKUP" == true ]] && skills_rsync_args+=(--backup --suffix=".bak-$(date +%Y%m%d%H%M%S)")
-    mkdir -p "$skills_dst"
+    local skills_backup_dir
+    skills_backup_dir="$HOME/.codex/skills-backups/$(date +%Y%m%d%H%M%S)"
+    if [[ "$BACKUP" == true ]]; then
+        skills_rsync_args+=(--backup --backup-dir="$skills_backup_dir")
+    fi
+    if [[ "$DRY_RUN" == false ]]; then
+        mkdir -p "$skills_dst"
+        [[ "$BACKUP" == true ]] && mkdir -p "$skills_backup_dir"
+    fi
     rsync "${skills_rsync_args[@]}" "$skills_src" "$skills_dst"
+
+    if [[ "$APPLY_ORBSTACK_DOCKER" == true ]]; then
+        local orbstack_docker_dst="$HOME/.orbstack/config/docker.json"
+        if [[ "$DRY_RUN" == true ]]; then
+            echo "would sync $SCRIPT_DIR/.docker/daemon.json -> $orbstack_docker_dst"
+            echo "would run: orb restart docker"
+        else
+            if ! command -v orb >/dev/null 2>&1; then
+                echo "orb is required for --apply-orbstack-docker" >&2
+                exit 1
+            fi
+
+            mkdir -p "$(dirname "$orbstack_docker_dst")"
+            if [[ "$BACKUP" == true ]]; then
+                rsync -avh --no-perms --backup --suffix=".bak-$(date +%Y%m%d%H%M%S)" \
+                    "$SCRIPT_DIR/.docker/daemon.json" "$orbstack_docker_dst"
+            else
+                rsync -avh --no-perms \
+                    "$SCRIPT_DIR/.docker/daemon.json" "$orbstack_docker_dst"
+            fi
+            orb restart docker
+        fi
+    fi
 
     if [[ "$DRY_RUN" == true ]]; then
         echo "dry run complete; no files changed"
@@ -89,8 +128,14 @@ while (($#)); do
         -b | --backup)
             BACKUP=true
             ;;
+        --preserve-local-skills)
+            DELETE_SKILLS=false
+            ;;
         --delete-skills)
             DELETE_SKILLS=true
+            ;;
+        --apply-orbstack-docker)
+            APPLY_ORBSTACK_DOCKER=true
             ;;
         -h | --help)
             usage
