@@ -8,7 +8,7 @@ Build image for packaging Go projects with C toolchains, especially Linux ARM an
 docker build -t go-cross-compile-builder:latest .
 ```
 
-The image defaults to `linux/amd64` because the bundled Linaro cross toolchains are x86_64 binaries. The base image uses `docker.1ms.run` by default and can be overridden with `BASE_IMAGE` or `IMAGE_PLATFORM` build args.
+The image defaults to `linux/amd64` because the bundled Linaro cross toolchains are x86_64 binaries. The base image is `debian:jessie-slim` by default. It uses glibc 2.19 to keep native CGO builds compatible with the previous Ubuntu 16.04/glibc 2.23 baseline. Jessie is end-of-life, so the Dockerfile uses archived Debian repositories. The toolchain defaults use a tested GitHub mirror because the former Linaro release URLs are no longer downloadable. Override `BASE_IMAGE`, `IMAGE_PLATFORM`, `GCC_ARM_URL`, or `GCC_AARCH64_URL` when required.
 
 Go defaults to the latest stable release from `go.dev`. Pin a specific version when reproducible builds are required:
 
@@ -29,8 +29,8 @@ build-linux-arm64:
         -e GOOS=linux \
         -e GOARCH=arm64 \
         -e CGO_ENABLED=1 \
-        -e CC=/opt/gcc-linaro-7.4.1-2019.02-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-gcc \
-        -e CXX=/opt/gcc-linaro-7.4.1-2019.02-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-g++ \
+        -e CC=/opt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-gcc \
+        -e CXX=/opt/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-g++ \
         $(BUILD_IMAGE) \
         go build -ldflags="-s -w" -v -buildvcs=false -o ${ARM64_OUTPUT} ${CMD_DIR}
 

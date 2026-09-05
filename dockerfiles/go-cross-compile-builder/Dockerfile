@@ -1,14 +1,11 @@
-ARG BASE_IMAGE=debian:bookworm-slim
+ARG BASE_IMAGE=debian:jessie-slim
 ARG IMAGE_PLATFORM=linux/amd64
 FROM --platform=${IMAGE_PLATFORM} ${BASE_IMAGE}
 
 ARG GO_VERSION=latest
 
-ARG GCC_ARM_VERSION=gcc-linaro-5.3.1-2016.05-x86_64_arm-linux-gnueabi
-ARG GCC_ARM_URL=https://releases.linaro.org/components/toolchain/binaries/5.3-2016.05/arm-linux-gnueabi/${GCC_ARM_VERSION}.tar.xz
-
-ARG GCC_AARCH64_VERSION=gcc-linaro-7.4.1-2019.02-x86_64_aarch64-linux-gnu
-ARG GCC_AARCH64_URL=https://releases.linaro.org/components/toolchain/binaries/7.4-2019.02/aarch64-linux-gnu/${GCC_AARCH64_VERSION}.tar.xz
+ARG GCC_ARM_URL=https://github.com/YuzukiHD/sunxi-bsp-toolchains/releases/download/1.0.0/gcc-linaro-5.3.1-2016.05-x86_64_arm-linux-gnueabi.tar.xz
+ARG GCC_AARCH64_URL=https://github.com/YuzukiHD/sunxi-bsp-toolchains/releases/download/1.0.0/gcc-linaro-5.3.1-2016.05-x86_64_aarch64-linux-gnu.tar.xz
 
 ENV GOPATH=/go
 ENV PATH="/go/bin:/usr/local/go/bin:${PATH}"
@@ -17,8 +14,16 @@ WORKDIR /app
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
+RUN sed -i '/^deb /d' /etc/apt/sources.list && \
+    printf '%s\n' \
+        'deb [trusted=yes] http://archive.debian.org/debian jessie main' \
+        'deb [trusted=yes] http://archive.debian.org/debian-security jessie/updates main' \
+        > /etc/apt/sources.list && \
+    apt-get -o Acquire::Check-Valid-Until=false \
+        -o Acquire::Retries=5 update && \
+    apt-get -o Acquire::AllowInsecureRepositories=true \
+        -o Acquire::Retries=5 \
+        --allow-unauthenticated install -y --no-install-recommends \
         ca-certificates \
         curl \
         gcc \
@@ -27,16 +32,48 @@ RUN apt-get update && \
         make \
         xz-utils && \
     if [[ "${GO_VERSION}" == "latest" ]]; then \
-        go_filename="$(curl -fsSL 'https://go.dev/dl/?mode=json' | \
-            grep -m 1 -o 'go[0-9.]*\.linux-amd64\.tar\.gz')"; \
-        go_download_url="https://go.dev/dl/${go_filename}"; \
+        curl -fsSL --retry 5 --retry-delay 2 \
+            'https://go.dev/dl/?mode=json' -o /tmp/go-releases.json && \
+        go_filename="$(grep -m 1 -o 'go[0-9.]*\.linux-amd64\.tar\.gz' \
+            /tmp/go-releases.json)" && \
+        go_download_url="https://dl.google.com/go/${go_filename}"; \
     else \
-        go_download_url="https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz"; \
+        go_download_url="https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz"; \
     fi && \
-    curl -fsSL "${go_download_url}" | tar -xz -C /usr/local && \
+    go_archive=/tmp/go.tar.gz && \
+    rm -f "${go_archive}" && \
+    for attempt in 1 2 3 4 5 6 7 8; do \
+        if curl -fsSL --continue-at - --output "${go_archive}" \
+            "${go_download_url}"; then \
+            break; \
+        fi; \
+        if [[ "${attempt}" == "8" ]]; then \
+            exit 1; \
+        fi; \
+        sleep 2; \
+    done && \
+    tar -xzf "${go_archive}" -C /usr/local && \
     ln -sf /usr/local/go/bin/go /usr/local/bin/go && \
     ln -sf /usr/local/go/bin/gofmt /usr/local/bin/gofmt && \
-    curl -fsSL "${GCC_ARM_URL}" | tar -xJ -C /opt && \
-    curl -fsSL "${GCC_AARCH64_URL}" | tar -xJ -C /opt && \
+    for attempt in 1 2 3 4 5 6 7 8; do \
+        if curl -fsSL --retry 5 --retry-delay 2 "${GCC_ARM_URL}" | \
+            tar -xJ -C /opt; then \
+            break; \
+        fi; \
+        if [[ "${attempt}" == "8" ]]; then \
+            exit 1; \
+        fi; \
+        sleep 2; \
+    done && \
+    for attempt in 1 2 3 4 5 6 7 8; do \
+        if curl -fsSL --retry 5 --retry-delay 2 "${GCC_AARCH64_URL}" | \
+            tar -xJ -C /opt; then \
+            break; \
+        fi; \
+        if [[ "${attempt}" == "8" ]]; then \
+            exit 1; \
+        fi; \
+        sleep 2; \
+    done && \
     apt-get purge -y --auto-remove xz-utils && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

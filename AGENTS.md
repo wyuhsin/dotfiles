@@ -51,7 +51,7 @@ This repository is the source of truth for personal dotfiles, package bootstrap 
 
 ### Docker
 
-- Edit the relevant `Dockerfile` directly. For `go-cross-compile-builder`, `GO_VERSION` defaults to `latest`, `BASE_IMAGE` to `debian:bookworm-slim`, and `IMAGE_PLATFORM` to `linux/amd64`; the Linaro toolchains require an x86_64 build platform.
+- Edit the relevant `Dockerfile` directly. For `go-cross-compile-builder`, `GO_VERSION` defaults to `latest`, `BASE_IMAGE` to `debian:jessie-slim` (glibc 2.19), and `IMAGE_PLATFORM` to `linux/amd64`; the Linaro toolchains require an x86_64 build platform.
 - For OrbStack engine changes, use `bootstrap.sh --apply-orbstack-docker` or `orb config docker`, then restart with `orb restart docker` and verify with `docker info --format '{{json .RegistryConfig.Mirrors}}'`.
 
 ## Verification
